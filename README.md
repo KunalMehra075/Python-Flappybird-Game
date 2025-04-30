@@ -2,6 +2,13 @@
 
 Flappy-Bird-Game
 
+To run the game, run the following commands:
+
+```
+pip install
+python game.py
+```
+
 Games:
 
 Game loop
