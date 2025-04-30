@@ -2,8 +2,10 @@ import pygame as pg
 import sys,time
 from bird import Bird
 from pipe import Pipe
+from pygame import mixer 
 
 pg.init()
+mixer.init()
 
 class Game:
     def __init__(self):
@@ -15,6 +17,11 @@ class Game:
         self.clock = pg.time.Clock()
         self.move_speed = 200
         
+        # Sfx
+        self.flap_sound = mixer.Sound("assets/sfx/flap.wav")
+        self.score_sound = mixer.Sound("assets/sfx/score.wav")
+        self.dead_sound = mixer.Sound("assets/sfx/dead.wav")
+        
         # Game Loop
         self.is_enter_pressed = False
         self.is_game_started = True
@@ -23,6 +30,9 @@ class Game:
         self.bird =Bird(self.scale_factor)
 
         self.font = pg.font.Font("assets/font.ttf",24)
+        
+        self.start_text = self.font.render("Press Enter to Play",True,(255,255,255))
+        self.start_text_rect = self.start_text.get_rect(center=(300,300))
         
         self.score_text = self.font.render("Score: 0 ",True,(255,255,255))
         self.score_text_rect = self.score_text.get_rect(center=(100,30))
@@ -61,6 +71,7 @@ class Game:
                         self.bird.is_not_collided = True
                      # if space pressed and game is running
                     elif event.key == pg.K_SPACE and self.is_enter_pressed:
+                        self.flap_sound.play()
                         self.bird.flap(dt)
                 # pressing restart rect
                 if event.type == pg.MOUSEBUTTONDOWN:
@@ -87,6 +98,7 @@ class Game:
             if bird_left > first_pipe.right and self.start_monitoring:
                 self.start_monitoring = False
                 self.score+=1
+                self.score_sound.play()
                 self.score_text = self.font.render(f"Score: {self.score}",True,(255,255,255))
                
     def checkCollisions(self):
@@ -99,10 +111,12 @@ class Game:
         if pipe_collision:
             self.is_enter_pressed = False
             self.is_game_started = False
+            self.dead_sound.play()
             
         if self.bird.rect.bottom > 568:
             self.bird.is_not_collided = False
             self.is_game_started = False
+            self.dead_sound.play()
     
     def updateEverything(self,dt):
         if self.is_enter_pressed:
@@ -118,7 +132,7 @@ class Game:
             if self.pipe_generate_counter>105:
                 self.pipes.append(Pipe(self.scale_factor,self.move_speed))
                 self.pipe_generate_counter = 0
-                print("pipe created")
+                # print("pipe created")
             self.pipe_generate_counter+=1
             
             # moving the pipes
@@ -129,7 +143,7 @@ class Game:
             if len(self.pipes)!=0:
                 if  self.pipes[0].rect_up.right<0:
                     self.pipes.pop(0)
-                    print("pipe removed")
+                    # print("pipe removed")
   
         # moving the bird 
         self.bird.update(dt)
@@ -145,7 +159,9 @@ class Game:
         self.win.blit(self.bird.image,self.bird.rect)
         self.win.blit(self.score_text,self.score_text_rect)
         
-        if not self.is_game_started:
+        if self.is_game_started and not self.is_enter_pressed:
+            self.win.blit(self.start_text,self.start_text_rect)
+        elif not self.is_game_started:  
             self.win.blit(self.restart_text,self.restart_text_rect)
     
     def restartGame(self):
