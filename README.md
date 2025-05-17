@@ -4,7 +4,7 @@ A simple clone of the classic Flappy Bird game built using Python and Pygame.
 
 ## 🖼 Demo
 
-![Catosaurous](https://media.giphy.com/media/DvO3mZorxl6Te/giphy.gif?cid=ecf05e478m3s8n98k836i9zbb8jjqmu81ahzktrro11h1uef&ep=v1_gifs_related&rid=giphy.gif&ct=g)
+![Demo](assets/demo.gif)
 
 ## 🎮 Game Description
 
